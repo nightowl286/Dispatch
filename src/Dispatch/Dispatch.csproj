@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>TNO.$(MSBuildProjectName)</AssemblyName>
+    <RootNamespace>TNO.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>Nightowl</Authors>
+    <Company>TNO</Company>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Dispatch.Abstractions\Dispatch.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TNO.DependencyInjection" Version="1.0.0" />
+    <PackageReference Include="TNO.Void" Version="1.0.0" />
+  </ItemGroup>
+
+</Project>
