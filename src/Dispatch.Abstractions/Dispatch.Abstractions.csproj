@@ -9,6 +9,9 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Nightowl</Authors>
     <Company>TNO</Company>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
 </Project>
