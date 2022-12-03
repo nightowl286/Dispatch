@@ -104,10 +104,22 @@ namespace TNO.Dispatch
             Register(outputType, requestType, handlerType, workflow);
          }
       }
+
+      /// <summary>Creates a new scope for this dispatch collection.</summary>
+      /// <returns>A <typeparamref name="TCollection"/> that represents the new scope.</returns>
       public abstract TCollection CreateScope();
       #endregion
 
       #region Helpers
+      /// <summary>
+      /// Finds all the types of <see cref="IRequestHandler{TOutput, TRequest}"/>
+      /// that the given <paramref name="handlerType"/> implements.
+      /// </summary>
+      /// <param name="handlerType">The type of the handler to check.</param>
+      /// <returns>
+      /// An enumerable of all the variants of <see cref="IRequestHandler{TOutput, TRequest}"/>
+      /// that the given <paramref name="handlerType"/> implements.
+      /// </returns>
       protected IEnumerable<Type> FindHandlerInterfaceImplementations(Type handlerType)
       {
          foreach (Type interfaceType in handlerType.GetInterfaces())
@@ -117,6 +129,14 @@ namespace TNO.Dispatch
                yield return interfaceType;
          }
       }
+
+      /// <summary>
+      /// Constructs a generic interface type (using <see cref="IRequestHandler{TOutput, TRequest}"/>)
+      /// for the given <paramref name="outputType"/> and <paramref name="requestType"/>.
+      /// </summary>
+      /// <param name="outputType">The output type to use.</param>
+      /// <param name="requestType">The request type to use.</param>
+      /// <returns></returns>
       protected Type CreateHandlerInterfaceType(Type outputType, Type requestType) => _genericHandlerInterfaceType.MakeGenericType(outputType, requestType);
       public IDispatchWorkflow CreateWorkflow() => new DispatchWorkflow(_serviceFacade);
       #endregion

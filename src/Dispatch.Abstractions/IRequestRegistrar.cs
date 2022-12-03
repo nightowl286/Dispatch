@@ -2,6 +2,10 @@
 
 namespace TNO.Dispatch.Abstractions
 {
+   /// <summary>
+   /// Denotes a common dispatch request registrar.
+   /// </summary>
+   /// <typeparam name="TCollection">The type of the dispatch collection this registrar belongs to.</typeparam>
    public interface IRequestRegistrar<out TCollection>
    {
       #region Methods
