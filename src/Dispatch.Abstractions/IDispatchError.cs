@@ -3,7 +3,7 @@
 namespace TNO.Dispatch.Abstractions
 {
    /// <summary>
-   /// Denotes a common dispatch error.
+   /// Denotes a dispatch error.
    /// </summary>
    public interface IDispatchError
    {
@@ -22,7 +22,6 @@ namespace TNO.Dispatch.Abstractions
       /// <returns>An <see cref="Exception"/> with the same information as this error.</returns>
       Exception GetException()
       {
-         // Todo(Nightowl): Create a custom exception type;
          if (InnerError is not null)
             return new Exception(Description, InnerError.GetException());
 
