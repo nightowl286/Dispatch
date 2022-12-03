@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TNO.DependencyInjection" Version="1.0.0" />
+    <PackageReference Include="TNO.DependencyInjection" Version="1.2.0" />
     <PackageReference Include="TNO.Void" Version="1.0.0" />
   </ItemGroup>
 

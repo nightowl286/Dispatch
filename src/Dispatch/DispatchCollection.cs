@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics;
+using TNO.DependencyInjection.Abstractions;
+using TNO.DependencyInjection.Abstractions.Components;
 using TNO.Dispatch.Abstractions;
 using TNO.Dispatch.Abstractions.Results;
-using TNO.DependencyInjection.Abstractions.Components;
-using TNO.DependencyInjection.Components;
-using TNO.Dispatch;
 
 namespace TNO.Dispatch
 {
@@ -11,21 +10,20 @@ namespace TNO.Dispatch
       where TRequestConstraint : notnull, IDispatchRequest
    {
       #region Fields
-      protected readonly SimpleCollection _collection;
-      protected readonly ReplaceMode _mode;
+      protected readonly IServiceFacade _serviceFacade;
       protected readonly DispatchCollection<TRequestConstraint, TCollection>? _outerScope;
       protected readonly Type _genericHandlerInterfaceType = typeof(IRequestHandler<,>);
       #endregion
 
-      public DispatchCollection(IServiceBuilder builder, ReplaceMode mode = ReplaceMode.Throw)
+      public DispatchCollection(IServiceScope scope)
       {
-         _collection = new SimpleCollection(builder);
-         _mode = mode;
+         _serviceFacade = scope.CreateScope(AppendValueMode.ReplaceAll);
       }
-      protected DispatchCollection(SimpleCollection collection, ReplaceMode mode, DispatchCollection<TRequestConstraint, TCollection> outerScope)
+      protected DispatchCollection(IServiceFacade scope, DispatchCollection<TRequestConstraint, TCollection> outerScope)
       {
-         _collection = collection;
-         _mode = mode;
+         if (scope.DefaultRegistrationMode != AppendValueMode.ReplaceAll)
+            throw new ArgumentException($"The given scope must have the {nameof(scope.DefaultRegistrationMode)} as {AppendValueMode.ReplaceAll}.", nameof(scope));
+         _serviceFacade = scope;
          _outerScope = outerScope;
       }
 
@@ -39,7 +37,7 @@ namespace TNO.Dispatch
 
          Type handlerInterfaceType = CreateHandlerInterfaceType(outputType, requestType);
 
-         if (_collection.IsRegistered(handlerInterfaceType))
+         if (_serviceFacade.IsRegistered(handlerInterfaceType))
             return true;
 
          return _outerScope?.CanDispatch<TOutput, TRequest>() == true;
@@ -52,7 +50,7 @@ namespace TNO.Dispatch
          Type requestType = typeof(TRequest);
 
          Type handlerInterfaceType = CreateHandlerInterfaceType(outputType, requestType);
-         object? handler = _collection.GetOptional(handlerInterfaceType);
+         object? handler = _serviceFacade.GetOptional(handlerInterfaceType);
 
          if (handler is IRequestHandler<TOutput, TRequest> typedHandler)
             return await typedHandler.HandleAsync(request, cancellationToken);
@@ -69,7 +67,7 @@ namespace TNO.Dispatch
       {
          Type handlerInterfaceType = CreateHandlerInterfaceType(outputType, requestType);
 
-         _collection.Singleton(handlerInterfaceType, handlerType, _mode);
+         _serviceFacade.Singleton(handlerInterfaceType, handlerType);
       }
       public void Register(Type handlerType)
       {
@@ -86,11 +84,13 @@ namespace TNO.Dispatch
       public void Register(Type outputType, Type requestType, Type handlerType, IDispatchWorkflow workflow)
       {
          Type lazyType = typeof(LazyDecorator<,>).MakeGenericType(outputType, requestType);
-         object lazyDecorator = Activator.CreateInstance(lazyType, (IServiceBuilder)_collection, workflow, handlerType)!;
+         object lazyDecorator = 
+            Activator.CreateInstance(lazyType, _serviceFacade, workflow, handlerType)
+            ?? throw new NullReferenceException($"Failed to create a lazy decorator in the {nameof(DispatchCollection<TRequestConstraint, TCollection>)}.");
 
          Type handlerInterfaceType = CreateHandlerInterfaceType(outputType, requestType);
 
-         _collection.Instance(handlerInterfaceType, lazyDecorator, _mode);
+         _serviceFacade.Instance(handlerInterfaceType, lazyDecorator);
       }
       public void Register(Type handlerType, IDispatchWorkflow workflow)
       {
@@ -118,7 +118,7 @@ namespace TNO.Dispatch
          }
       }
       protected Type CreateHandlerInterfaceType(Type outputType, Type requestType) => _genericHandlerInterfaceType.MakeGenericType(outputType, requestType);
-      public IDispatchWorkflow CreateWorkflow() => new DispatchWorkflow(_collection);
+      public IDispatchWorkflow CreateWorkflow() => new DispatchWorkflow(_serviceFacade);
       #endregion
    }
 }
