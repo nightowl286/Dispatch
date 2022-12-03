@@ -9,13 +9,13 @@ namespace TNO.Dispatch
    internal sealed class DispatchWorkflow : IDispatchWorkflow
    {
       #region Fields
-      private readonly IReadOnlyList<Type> _decoratorTypes;
+      private readonly List<Type> _decoratorTypes;
       private readonly IServiceBuilder _builder;
       #endregion
-      public DispatchWorkflow(IServiceBuilder builder, IReadOnlyList<Type> decoratorTypes)
+      public DispatchWorkflow(IServiceBuilder builder, IEnumerable<Type> decoratorTypes)
       {
          _builder = builder;
-         _decoratorTypes = decoratorTypes;
+         _decoratorTypes = new List<Type>(decoratorTypes);
       }
 
       #region Methods
@@ -26,7 +26,6 @@ namespace TNO.Dispatch
          if (_decoratorTypes.Count == 0)
             return innerHandler;
 
-         IDispatchDecorator<TOutput, TRequest>? firstDecorator = null;
          IDispatchDecorator<TOutput, TRequest>? lastDecorator = null;
 
          foreach (Type genericDecoratorType in _decoratorTypes)
@@ -36,17 +35,12 @@ namespace TNO.Dispatch
             object decorator = _builder.Build(decoratorType);
             IDispatchDecorator<TOutput, TRequest> typedDecorator = (IDispatchDecorator<TOutput, TRequest>)decorator;
 
-            firstDecorator ??= typedDecorator;
-            if (lastDecorator is not null)
-               lastDecorator.InnerHandler = typedDecorator;
+            typedDecorator.InnerHandler = lastDecorator ?? innerHandler;
             lastDecorator = typedDecorator;
          }
 
          Debug.Assert(lastDecorator is not null);
-         lastDecorator.InnerHandler = innerHandler;
-
-         Debug.Assert(firstDecorator is not null);
-         return firstDecorator;
+         return lastDecorator;
       }
 
       public IWorkflowBuilder Clone() => new WorkflowBuilder(_builder, _decoratorTypes);

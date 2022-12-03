@@ -49,36 +49,36 @@
       public void Build_WithTwoDecorators_ReturnsCorrectStructure()
       {
          // Arrange
-         IUnitHandler<object, IUnitRequest> expectedHandler = Mock.Of<IUnitHandler<object, IUnitRequest>>();
-         IUnitDecorator<object, IUnitRequest> expectedDecorator1 = Mock.Of<IUnitDecorator<object, IUnitRequest>>();
-         IUnitDecorator2<object, IUnitRequest> expectedDecorator2 = Mock.Of<IUnitDecorator2<object, IUnitRequest>>();
+         IUnitHandler<object, IUnitRequest> handler = Mock.Of<IUnitHandler<object, IUnitRequest>>();
+         IUnitDecorator<object, IUnitRequest> expectedInnerDecorator = Mock.Of<IUnitDecorator<object, IUnitRequest>>();
+         IUnitDecorator2<object, IUnitRequest> expectedOuterDecorator = Mock.Of<IUnitDecorator2<object, IUnitRequest>>();
 
-         Type decorator1Type = typeof(IUnitDecorator<object, IUnitRequest>);
-         Type decorator2Type = typeof(IUnitDecorator2<object, IUnitRequest>);
+         Type innerDecoratorType = typeof(IUnitDecorator<object, IUnitRequest>);
+         Type outerDecoratorType = typeof(IUnitDecorator2<object, IUnitRequest>);
 
-         Type genericDecorator1Type = typeof(IUnitDecorator<,>);
-         Type genericDecorator2Type = typeof(IUnitDecorator2<,>);
+         Type genericInnerDecoratorType = typeof(IUnitDecorator<,>);
+         Type genericOuterDecoratorType = typeof(IUnitDecorator2<,>);
 
          Mock<IServiceBuilder> builder = new Mock<IServiceBuilder>();
-         builder.Setup(b => b.Build(decorator1Type)).Returns(expectedDecorator1);
-         builder.Setup(b => b.Build(decorator2Type)).Returns(expectedDecorator2);
+         builder.Setup(b => b.Build(innerDecoratorType)).Returns(expectedInnerDecorator);
+         builder.Setup(b => b.Build(outerDecoratorType)).Returns(expectedOuterDecorator);
 
-         DispatchWorkflow sut = new DispatchWorkflow(builder.Object, new[] { genericDecorator1Type, genericDecorator2Type });
+         DispatchWorkflow sut = new DispatchWorkflow(builder.Object, new[] { genericInnerDecoratorType, genericOuterDecoratorType });
 
          // Act
-         IRequestHandler<object, IUnitRequest> decoratedHandler = sut.Build(expectedHandler);
+         IRequestHandler<object, IUnitRequest> decoratedHandler = sut.Build(handler);
 
          // Assert
-         Assert.AreSame(expectedDecorator1, decoratedHandler);
+         Assert.AreSame(expectedOuterDecorator, decoratedHandler);
 
-         IUnitDecorator<object, IUnitRequest> decorator1 = (IUnitDecorator<object, IUnitRequest>)decoratedHandler;
-         Assert.AreSame(expectedDecorator2, decorator1.InnerHandler);
+         IUnitDecorator2<object, IUnitRequest> outerDecorator = (IUnitDecorator2<object, IUnitRequest>)decoratedHandler;
+         Assert.AreSame(expectedInnerDecorator, outerDecorator.InnerHandler);
 
-         IUnitDecorator2<object, IUnitRequest> decorator2 = (IUnitDecorator2<object, IUnitRequest>)decorator1.InnerHandler;
-         Assert.AreSame(expectedHandler, decorator2.InnerHandler);
+         IUnitDecorator<object, IUnitRequest> innerDecorator = (IUnitDecorator<object, IUnitRequest>)outerDecorator.InnerHandler;
+         Assert.AreSame(handler, innerDecorator.InnerHandler);
 
-         builder.VerifyOnce(b => b.Build(decorator1Type));
-         builder.VerifyOnce(b => b.Build(decorator2Type));
+         builder.VerifyOnce(b => b.Build(innerDecoratorType));
+         builder.VerifyOnce(b => b.Build(outerDecoratorType));
       }
       #endregion
 
