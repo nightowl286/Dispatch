@@ -1,9 +1,9 @@
-﻿namespace TNO.Dispatch.Abstractions
+﻿namespace TNO.Dispatch.Abstractions.Workflows
 {
    public interface IWorkflowCreator
    {
       #region Methods
-      IDispatchWorkflow CreateWorkflow();
+      IWorkflowBuilder NewWorkflow();
       #endregion
    }
 }

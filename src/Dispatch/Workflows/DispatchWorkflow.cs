@@ -1,23 +1,24 @@
 ﻿using System.Diagnostics;
-using TNO.Dispatch.Abstractions;
 using TNO.DependencyInjection.Abstractions.Components;
+using TNO.Dispatch.Abstractions;
+using TNO.Dispatch.Abstractions.Workflows;
+using TNO.Dispatch.Workflows;
 
 namespace TNO.Dispatch
 {
    internal sealed class DispatchWorkflow : IDispatchWorkflow
    {
       #region Fields
-      private readonly List<Type> _decoratorTypes = new List<Type>();
+      private readonly IReadOnlyList<Type> _decoratorTypes;
       private readonly IServiceBuilder _builder;
       #endregion
-      public DispatchWorkflow(IServiceBuilder builder) => _builder = builder;
+      public DispatchWorkflow(IServiceBuilder builder, IReadOnlyList<Type> decoratorTypes)
+      {
+         _builder = builder;
+         _decoratorTypes = decoratorTypes;
+      }
 
       #region Methods
-      public IDispatchWorkflow With(Type decoratorType)
-      {
-         _decoratorTypes.Add(decoratorType);
-         return this;
-      }
       public IRequestHandler<TOutput, TRequest> Build<TOutput, TRequest>(IRequestHandler<TOutput, TRequest> innerHandler)
          where TOutput : notnull
          where TRequest : notnull, IDispatchRequest
@@ -47,6 +48,8 @@ namespace TNO.Dispatch
          Debug.Assert(firstDecorator is not null);
          return firstDecorator;
       }
+
+      public IWorkflowBuilder Clone() => new WorkflowBuilder(_builder, _decoratorTypes);
       #endregion
    }
 }

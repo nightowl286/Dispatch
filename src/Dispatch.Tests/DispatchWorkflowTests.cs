@@ -31,8 +31,7 @@
          Mock<IServiceBuilder> builder = new Mock<IServiceBuilder>();
          builder.Setup(b => b.Build(decoratorType)).Returns(expectedDecorator);
 
-         DispatchWorkflow sut = new DispatchWorkflow(builder.Object);
-         sut.With(genericDecoratorType);
+         DispatchWorkflow sut = new DispatchWorkflow(builder.Object, new[] { genericDecoratorType });
 
          // Act
          IRequestHandler<object, IUnitRequest> decoratedHandler = sut.Build(expectedHandler);
@@ -64,9 +63,7 @@
          builder.Setup(b => b.Build(decorator1Type)).Returns(expectedDecorator1);
          builder.Setup(b => b.Build(decorator2Type)).Returns(expectedDecorator2);
 
-         DispatchWorkflow sut = new DispatchWorkflow(builder.Object);
-         sut.With(genericDecorator1Type);
-         sut.With(genericDecorator2Type);
+         DispatchWorkflow sut = new DispatchWorkflow(builder.Object, new[] { genericDecorator1Type, genericDecorator2Type });
 
          // Act
          IRequestHandler<object, IUnitRequest> decoratedHandler = sut.Build(expectedHandler);
@@ -86,7 +83,7 @@
       #endregion
 
       #region Helpers
-      private static DispatchWorkflow CreateSut() => new DispatchWorkflow(Mock.Of<IServiceBuilder>());
+      private static DispatchWorkflow CreateSut() => new DispatchWorkflow(Mock.Of<IServiceBuilder>(), Array.Empty<Type>());
       #endregion
    }
 }

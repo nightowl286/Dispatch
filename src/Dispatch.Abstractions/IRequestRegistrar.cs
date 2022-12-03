@@ -1,4 +1,5 @@
 ﻿using System;
+using TNO.Dispatch.Abstractions.Workflows;
 
 namespace TNO.Dispatch.Abstractions
 {

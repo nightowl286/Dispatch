@@ -3,11 +3,13 @@ using TNO.DependencyInjection.Abstractions;
 using TNO.DependencyInjection.Abstractions.Components;
 using TNO.Dispatch.Abstractions;
 using TNO.Dispatch.Abstractions.Results;
+using TNO.Dispatch.Abstractions.Workflows;
+using TNO.Dispatch.Workflows;
 
 namespace TNO.Dispatch
 {
    public abstract class DispatchCollection<TRequestConstraint, TCollection> : IRequestRegistrar<TCollection>, IRequestDispatcher<TRequestConstraint>, IWorkflowCreator
-      where TRequestConstraint : notnull, IDispatchRequest
+    where TRequestConstraint : notnull, IDispatchRequest
    {
       #region Fields
       protected readonly IServiceFacade _serviceFacade;
@@ -84,7 +86,7 @@ namespace TNO.Dispatch
       public void Register(Type outputType, Type requestType, Type handlerType, IDispatchWorkflow workflow)
       {
          Type lazyType = typeof(LazyDecorator<,>).MakeGenericType(outputType, requestType);
-         object lazyDecorator = 
+         object lazyDecorator =
             Activator.CreateInstance(lazyType, _serviceFacade, workflow, handlerType)
             ?? throw new NullReferenceException($"Failed to create a lazy decorator in the {nameof(DispatchCollection<TRequestConstraint, TCollection>)}.");
 
@@ -138,7 +140,7 @@ namespace TNO.Dispatch
       /// <param name="requestType">The request type to use.</param>
       /// <returns></returns>
       protected Type CreateHandlerInterfaceType(Type outputType, Type requestType) => _genericHandlerInterfaceType.MakeGenericType(outputType, requestType);
-      public IDispatchWorkflow CreateWorkflow() => new DispatchWorkflow(_serviceFacade);
+      public IWorkflowBuilder NewWorkflow() => new WorkflowBuilder(_serviceFacade);
       #endregion
    }
 }

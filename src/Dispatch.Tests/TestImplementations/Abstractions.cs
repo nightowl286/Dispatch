@@ -1,4 +1,6 @@
-﻿namespace TNO.Dispatch.Tests.TestImplementations
+﻿using TNO.Dispatch.Abstractions.Workflows;
+
+namespace TNO.Dispatch.Tests.TestImplementations
 {
    public interface IUnitRequest : IDispatchRequest { }
    public interface IUnitDispatcher : IRequestDispatcher<IUnitRequest> { }
