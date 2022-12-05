@@ -2,7 +2,7 @@
 using TNO.Dispatch.Abstractions;
 using TNO.Dispatch.Abstractions.Results;
 
-namespace TNO.Tests.Dispatch.Abstractions
+namespace TNO.Tests.Moq.Dispatch.Abstractions
 {
    /// <summary>
    /// Contains useful extension methods for the <see cref="Mock"/>&lt;<see cref="IRequestHandler{T,U}"/>&gt; class.
@@ -83,7 +83,7 @@ namespace TNO.Tests.Dispatch.Abstractions
          where TOutput : notnull
          where TRequest : IDispatchRequest
       {
-         IDispatchResult<TOutput> mockResult = 
+         IDispatchResult<TOutput> mockResult =
             new Mock<IDispatchResult<TOutput>>()
             .SuccessfulOutput(result)
             .Object;

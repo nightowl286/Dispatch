@@ -1,9 +1,8 @@
 ﻿using Moq;
 using TNO.Dispatch.Abstractions;
 using TNO.Dispatch.Abstractions.Workflows;
-using TNO.Tests.Moq;
 
-namespace TNO.Tests.Dispatch.Abstractions
+namespace TNO.Tests.Moq.Dispatch.Abstractions
 {
    /// <summary>
    /// Contains useful extension methods for the <see cref="Mock"/>&lt;<see cref="IDispatchWorkflow"/>&gt; class.

@@ -5,6 +5,8 @@ using TNO.Dispatch.Decorators;
 namespace TNO.Dispatch.Tests.Decorators
 {
    [TestClass]
+   [TestCategory(Category.Dispatch)]
+   [TestCategory(Category.Decorator)]
    public class LazyDecoratorTests
    {
       #region Test Methods
@@ -21,7 +23,7 @@ namespace TNO.Dispatch.Tests.Decorators
          Type handlerType = typeof(IRequestHandler<object, IDispatchRequest>);
 
          // Arrange (Workflow)
-         Mock<IDispatchWorkflow> workflowMock = 
+         Mock<IDispatchWorkflow> workflowMock =
             new Mock<IDispatchWorkflow>(MockBehavior.Strict)
             .With(handler);
 

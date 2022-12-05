@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Dispatch\Dispatch.csproj" />
-    <ProjectReference Include="..\Tests.Dispatch.Abstractions\Tests.Dispatch.Abstractions.csproj" />
+    <ProjectReference Include="..\Tests.Moq.Dispatch.Abstractions\Tests.Moq.Dispatch.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

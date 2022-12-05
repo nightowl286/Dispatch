@@ -2,7 +2,7 @@
 using TNO.Dispatch.Abstractions;
 using TNO.Dispatch.Abstractions.Results;
 
-namespace TNO.Tests.Dispatch.Abstractions
+namespace TNO.Tests.Moq.Dispatch.Abstractions
 {
    /// <summary>
    /// Contains useful extension methods for the <see cref="Mock"/>&lt;<see cref="IDispatchResult{T}"/>&gt; class.
@@ -70,9 +70,9 @@ namespace TNO.Tests.Dispatch.Abstractions
       public static Mock<IDispatchResult<TOutput>> SuccessfulOutput<TOutput>(this Mock<IDispatchResult<TOutput>> mockResult, TOutput output)
          where TOutput : notnull
       {
-         WithSuccess(mockResult);
-         WithNoErrors(mockResult);
-         WithOutput(mockResult, output);
+         mockResult.WithSuccess();
+         mockResult.WithNoErrors();
+         mockResult.WithOutput(output);
 
          return mockResult;
       }
