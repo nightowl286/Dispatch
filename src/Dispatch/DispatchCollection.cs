@@ -4,13 +4,14 @@ using TNO.DependencyInjection.Abstractions.Components;
 using TNO.Dispatch.Abstractions;
 using TNO.Dispatch.Abstractions.Results;
 using TNO.Dispatch.Abstractions.Workflows;
+using TNO.Dispatch.Decorators;
 using TNO.Dispatch.Workflows;
 
 namespace TNO.Dispatch
 {
    /// <inheritdoc/>
    public abstract class DispatchCollection<TRequestConstraint, TCollection> : IRequestRegistrar<TCollection>, IRequestDispatcher<TRequestConstraint>, IWorkflowCreator
-    where TRequestConstraint : notnull, IDispatchRequest
+   where TRequestConstraint : notnull, IDispatchRequest
    {
       #region Fields
       /// <summary>The service facade scope that will contain the registered handlers.</summary>
@@ -112,6 +113,7 @@ namespace TNO.Dispatch
       /// <inheritdoc/>
       public void Register(Type outputType, Type requestType, Type handlerType, IDispatchWorkflow workflow)
       {
+         // Todo(Nightowl): This might need a different approach? This works but doesn't seem that neat;
          Type lazyType = typeof(LazyDecorator<,>).MakeGenericType(outputType, requestType);
          object lazyDecorator =
             Activator.CreateInstance(lazyType, _serviceFacade, workflow, handlerType)

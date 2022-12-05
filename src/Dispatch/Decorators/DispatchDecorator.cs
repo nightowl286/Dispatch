@@ -2,7 +2,7 @@
 using TNO.Dispatch.Abstractions;
 using TNO.Dispatch.Abstractions.Results;
 
-namespace TNO.Dispatch
+namespace TNO.Dispatch.Decorators
 {
    /// <inheritdoc/>
    public abstract class DispatchDecorator<TOutput, TRequest> : IDispatchDecorator<TOutput, TRequest>

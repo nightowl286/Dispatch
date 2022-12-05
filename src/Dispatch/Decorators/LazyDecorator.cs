@@ -3,11 +3,11 @@ using TNO.Dispatch.Abstractions;
 using TNO.Dispatch.Abstractions.Results;
 using TNO.Dispatch.Abstractions.Workflows;
 
-namespace TNO.Dispatch
+namespace TNO.Dispatch.Decorators
 {
    internal sealed class LazyDecorator<TOutput, TRequest> : IRequestHandler<TOutput, TRequest>
-     where TOutput : notnull
-     where TRequest : notnull, IDispatchRequest
+      where TOutput : notnull
+      where TRequest : notnull, IDispatchRequest
    {
       #region Fields
       private IRequestHandler<TOutput, TRequest>? _instance;
