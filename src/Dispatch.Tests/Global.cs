@@ -3,6 +3,7 @@ global using Moq;
 global using TNO.DependencyInjection.Abstractions.Components;
 global using TNO.Dispatch.Abstractions;
 global using TNO.Dispatch.Tests.TestImplementations;
+global using TNO.Tests.Dispatch.Abstractions;
 global using TNO.Tests.Moq;
 
 #if DEBUG

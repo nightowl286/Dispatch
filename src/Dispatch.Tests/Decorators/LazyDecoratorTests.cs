@@ -1,7 +1,6 @@
 ﻿using TNO.Dispatch.Abstractions.Results;
 using TNO.Dispatch.Abstractions.Workflows;
 using TNO.Dispatch.Decorators;
-using TNO.Dispatch.Results;
 
 namespace TNO.Dispatch.Tests.Decorators
 {
@@ -14,33 +13,35 @@ namespace TNO.Dispatch.Tests.Decorators
       {
          // Arrange (Handler)
          object handlerResult = new object();
-         Mock<IUnitHandler<object, IUnitRequest>> handlerMock = new Mock<IUnitHandler<object, IUnitRequest>>(MockBehavior.Strict);
-         handlerMock.Setup(h => h.HandleAsync(It.IsAny<IUnitRequest>(), default)).ReturnsAsync(new DispatchResult<object>(handlerResult));
-         IUnitHandler<object, IUnitRequest> handler = handlerMock.Object;
+         IRequestHandler<object, IDispatchRequest> handler =
+            new Mock<IRequestHandler<object, IDispatchRequest>>(MockBehavior.Strict)
+            .WithResult(handlerResult)
+            .Object;
 
-         Type handlerType = typeof(IUnitHandler<object, IUnitRequest>);
+         Type handlerType = typeof(IRequestHandler<object, IDispatchRequest>);
 
          // Arrange (Workflow)
-         Mock<IDispatchWorkflow> workflowMock = new Mock<IDispatchWorkflow>(MockBehavior.Strict);
-         workflowMock.Setup(w => w.Build(handler)).Returns(handler);
+         Mock<IDispatchWorkflow> workflowMock = 
+            new Mock<IDispatchWorkflow>(MockBehavior.Strict)
+            .With(handler);
 
          // Arrange (Builder)
          Mock<IServiceBuilder> builderMock = new Mock<IServiceBuilder>(MockBehavior.Strict);
          builderMock.Setup(b => b.Build(handlerType)).Returns(handler);
 
          // Arrange (Sut)
-         LazyDecorator<object, IUnitRequest> sut =
-            new LazyDecorator<object, IUnitRequest>(
+         LazyDecorator<object, IDispatchRequest> sut =
+            new LazyDecorator<object, IDispatchRequest>(
                builderMock.Object,
                workflowMock.Object,
                handlerType);
 
          // Pre-Act Assert (make sure constructor does not call anything)
-         workflowMock.VerifyNever(d => d.Build(It.IsAny<IRequestHandler<object, IUnitRequest>>()));
+         workflowMock.VerifyNever();
          builderMock.VerifyNever(b => b.Build(It.IsAny<Type>()));
 
          // Act
-         IDispatchResult<object> result = await sut.HandleAsync(Mock.Of<IUnitRequest>());
+         IDispatchResult<object> result = await sut.HandleAsync(Mock.Of<IDispatchRequest>());
 
          // Assert (Result)
          Assert.IsTrue(result.Successful);
@@ -50,7 +51,7 @@ namespace TNO.Dispatch.Tests.Decorators
          builderMock.VerifyOnce(b => b.Build(handlerType));
 
          // Assert (Workflow)
-         workflowMock.VerifyOnce(w => w.Build(handler));
+         workflowMock.VerifyOnce(handler);
       }
       #endregion
    }
