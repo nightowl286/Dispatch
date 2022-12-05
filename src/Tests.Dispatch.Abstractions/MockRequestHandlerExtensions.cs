@@ -34,6 +34,26 @@ namespace TNO.Tests.Dispatch.Abstractions
          return mockHandler;
       }
 
+      /// <inheritdoc cref="WithResult{TOutput, TRequest}(Mock{IRequestHandler{TOutput, TRequest}}, TRequest, IDispatchResult{TOutput})"/>
+      public static Mock<IRequestHandler<TOutput, TRequest>> WithResult<TOutput, TRequest>(
+         this Mock<IRequestHandler<TOutput, TRequest>> mockHandler,
+         TRequest request,
+         TOutput result)
+         where TOutput : notnull
+         where TRequest : IDispatchRequest
+      {
+         IDispatchResult<TOutput> mockResult =
+            new Mock<IDispatchResult<TOutput>>()
+            .SuccessfulOutput(result)
+            .Object;
+
+         mockHandler
+            .Setup(h => h.HandleAsync(request, default))
+            .ReturnsAsync(mockResult);
+
+         return mockHandler;
+      }
+
       /// <summary>
       /// Setups the given <paramref name="mockHandler"/> to return the given
       /// <paramref name="result"/> for any request that is provided.
@@ -63,14 +83,14 @@ namespace TNO.Tests.Dispatch.Abstractions
          where TOutput : notnull
          where TRequest : IDispatchRequest
       {
-         Mock<IDispatchResult<TOutput>> mockResult = new Mock<IDispatchResult<TOutput>>();
-         mockResult.SetupGet(r => r.Successful).Returns(true);
-         mockResult.SetupGet(r => r.Errors).Returns(Array.Empty<IDispatchError>());
-         mockResult.SetupGet(r => r.Output).Returns(result);
+         IDispatchResult<TOutput> mockResult = 
+            new Mock<IDispatchResult<TOutput>>()
+            .SuccessfulOutput(result)
+            .Object;
 
          mockHandler
             .Setup(h => h.HandleAsync(It.IsAny<TRequest>(), default))
-            .ReturnsAsync(mockResult.Object);
+            .ReturnsAsync(mockResult);
 
          return mockHandler;
       }
