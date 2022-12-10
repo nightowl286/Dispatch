@@ -10,7 +10,7 @@ namespace TNO.Tests.Moq.Dispatch.Abstractions
    public static class MockDispatchResultExtensions
    {
       #region Methods
-      /// <summary>Setups the given <paramref name="mockResult"/> with the given <paramref name="successful"/> state.</summary>
+      /// <summary>Sets up the given <paramref name="mockResult"/> with the given <paramref name="successful"/> state.</summary>
       /// <typeparam name="TOutput">The output type of the result.</typeparam>
       /// <param name="mockResult">The mock result to setup.</param>
       /// <param name="successful">Whether the result should be successful.</param>
@@ -23,7 +23,7 @@ namespace TNO.Tests.Moq.Dispatch.Abstractions
       }
 
       /// <summary>
-      /// Setups the given <paramref name="mockResult"/> to be unsuccessful, have a
+      /// Sets up the given <paramref name="mockResult"/> to be unsuccessful, have a
       /// <see langword="default"/> output, and the given <paramref name="errors"/>.
       /// </summary>
       /// <param name="mockResult">The mock result to setup.</param>
@@ -39,7 +39,7 @@ namespace TNO.Tests.Moq.Dispatch.Abstractions
       }
 
       /// <summary>
-      /// Setups the given <paramref name="mockResult"/> to have no errors.
+      /// Sets up the given <paramref name="mockResult"/> to have no errors.
       /// </summary>
       /// <inheritdoc cref="UnsuccessfulErrors{TOutput}(Mock{IDispatchResult{TOutput}}, IReadOnlyCollection{IDispatchError})"/>
       public static Mock<IDispatchResult<TOutput>> WithNoErrors<TOutput>(this Mock<IDispatchResult<TOutput>> mockResult)
@@ -49,7 +49,7 @@ namespace TNO.Tests.Moq.Dispatch.Abstractions
          return mockResult;
       }
 
-      /// <summary>Setups the given <paramref name="mockResult"/> to have the given <paramref name="output"/>.</summary>
+      /// <summary>Sets up the given <paramref name="mockResult"/> to have the given <paramref name="output"/>.</summary>
       /// <param name="mockResult">The mock result to setup.</param>
       /// <param name="output">The output that the result should have.</param>
       /// <inheritdoc cref="WithSuccess{TOutput}(Mock{IDispatchResult{TOutput}}, bool)"/>
@@ -61,7 +61,7 @@ namespace TNO.Tests.Moq.Dispatch.Abstractions
       }
 
       /// <summary>
-      /// Setups the given <paramref name="mockResult"/> to be successful,
+      /// Sets up the given <paramref name="mockResult"/> to be successful,
       /// have no errors, and have the given <paramref name="output"/>.
       /// </summary>
       /// <param name="mockResult">The mock result to setup.</param>

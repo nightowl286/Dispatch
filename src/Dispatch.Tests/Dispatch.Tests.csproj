@@ -21,7 +21,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="TNO.Tests.Moq" Version="1.0.2" />
+    <PackageReference Include="TNO.Tests.Moq" Version="1.0.4" />
+    <PackageReference Include="TNO.Tests.Moq.DependencyInjection.Abstractions" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>

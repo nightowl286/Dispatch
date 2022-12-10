@@ -11,7 +11,7 @@ namespace TNO.Tests.Moq.Dispatch.Abstractions
    {
       #region Methods
       /// <summary>
-      /// Setups the given <paramref name="mockHandler"/> to return the given
+      /// Sets up the given <paramref name="mockHandler"/> to return the given
       /// <paramref name="result"/> when the given <paramref name="request"/> is provided.
       /// </summary>
       /// <typeparam name="TOutput">The output type of the handler.</typeparam>
@@ -55,7 +55,7 @@ namespace TNO.Tests.Moq.Dispatch.Abstractions
       }
 
       /// <summary>
-      /// Setups the given <paramref name="mockHandler"/> to return the given
+      /// Sets up the given <paramref name="mockHandler"/> to return the given
       /// <paramref name="result"/> for any request that is provided.
       /// </summary>
       /// <inheritdoc cref="WithResult{TOutput, TRequest}(Mock{IRequestHandler{TOutput, TRequest}}, TRequest, IDispatchResult{TOutput})"/>
@@ -73,7 +73,7 @@ namespace TNO.Tests.Moq.Dispatch.Abstractions
       }
 
       /// <summary>
-      /// Setups the given <paramref name="mockHandler"/> to return the given
+      /// Sets up the given <paramref name="mockHandler"/> to return the given
       /// <paramref name="result"/> for any request that is provided.
       /// </summary>
       /// <inheritdoc cref="WithResult{TOutput, TRequest}(Mock{IRequestHandler{TOutput, TRequest}}, TRequest, IDispatchResult{TOutput})"/>
