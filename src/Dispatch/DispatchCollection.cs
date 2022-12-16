@@ -9,7 +9,11 @@ using TNO.Dispatch.Workflows;
 
 namespace TNO.Dispatch
 {
-   /// <inheritdoc/>
+   /// <summary>
+   /// A base class for a dispatch collection.
+   /// </summary>
+   /// <typeparam name="TRequestConstraint">The type of the allowed requests.</typeparam>
+   /// <typeparam name="TCollection">The type of the collection itself.</typeparam>
    public abstract class DispatchCollection<TRequestConstraint, TCollection> : IRequestRegistrar<TCollection>, IRequestDispatcher<TRequestConstraint>, IWorkflowCreator
    where TRequestConstraint : notnull, IDispatchRequest
    {
