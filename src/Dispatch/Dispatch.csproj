@@ -12,7 +12,7 @@
     <IncludeSymbols>True</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TNO.DependencyInjection" Version="1.2.0" />
+    <PackageReference Include="TNO.DependencyInjection" Version="1.2.1" />
     <PackageReference Include="TNO.Void" Version="1.0.0" />
   </ItemGroup>
 
