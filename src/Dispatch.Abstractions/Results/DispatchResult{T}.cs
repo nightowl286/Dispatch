@@ -42,4 +42,10 @@ public class DispatchResult<TOutput> : IDispatchResult<TOutput>
       Errors = errors;
    }
    #endregion
+
+   #region Implicit Conversions
+   /// <summary>Converts the given <paramref name="result"/> to a successful <see cref="DispatchResult{TOutput}"/>.</summary>
+   /// <param name="result">The result to convert.</param>
+   public static implicit operator DispatchResult<TOutput>(TOutput result) => new DispatchResult<TOutput>(result);
+   #endregion
 }
