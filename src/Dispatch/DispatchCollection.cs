@@ -93,15 +93,17 @@ where TRequestConstraint : notnull, IDispatchRequest
 
    #region Registrar
    /// <inheritdoc/>
-   public void Register(Type outputType, Type requestType, Type handlerType)
+   public IRequestRegistrar<TCollection> Register(Type outputType, Type requestType, Type handlerType)
    {
       Type handlerInterfaceType = CreateHandlerInterfaceType(outputType, requestType);
 
       _serviceFacade.Singleton(handlerInterfaceType, handlerType);
+
+      return this;
    }
 
    /// <inheritdoc/>
-   public void Register(Type handlerType)
+   public IRequestRegistrar<TCollection> Register(Type handlerType)
    {
       foreach (Type interfaceType in FindHandlerInterfaceImplementations(handlerType))
       {
@@ -112,10 +114,12 @@ where TRequestConstraint : notnull, IDispatchRequest
          Type requestType = genericArguments[1];
          Register(outputType, requestType, handlerType);
       }
+
+      return this;
    }
 
    /// <inheritdoc/>
-   public void Register(Type outputType, Type requestType, Type handlerType, IDispatchWorkflow workflow)
+   public IRequestRegistrar<TCollection> Register(Type outputType, Type requestType, Type handlerType, IDispatchWorkflow workflow)
    {
       // Todo(Nightowl): This might need a different approach? This works but doesn't seem that neat;
       Type lazyType = typeof(LazyDecorator<,>).MakeGenericType(outputType, requestType);
@@ -126,10 +130,12 @@ where TRequestConstraint : notnull, IDispatchRequest
       Type handlerInterfaceType = CreateHandlerInterfaceType(outputType, requestType);
 
       _serviceFacade.Instance(handlerInterfaceType, lazyDecorator);
+
+      return this;
    }
 
    /// <inheritdoc/>
-   public void Register(Type handlerType, IDispatchWorkflow workflow)
+   public IRequestRegistrar<TCollection> Register(Type handlerType, IDispatchWorkflow workflow)
    {
       foreach (Type interfaceType in FindHandlerInterfaceImplementations(handlerType))
       {
@@ -140,6 +146,8 @@ where TRequestConstraint : notnull, IDispatchRequest
          Type requestType = genericArguments[1];
          Register(outputType, requestType, handlerType, workflow);
       }
+
+      return this;
    }
 
    /// <inheritdoc/>
