@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using TNO.Dispatch.Abstractions;
-using TNO.Dispatch.Abstractions.Results;
+using TNO.Dispatch.Results;
 
 namespace TNO.Dispatch.Decorators;
 
@@ -9,23 +9,23 @@ public abstract class DispatchDecorator<TOutput, TRequest> : IDispatchDecorator<
    where TOutput : notnull
    where TRequest : notnull, IDispatchRequest
 {
-    #region Properties
-    /// <inheritdoc/>
-    public IRequestHandler<TOutput, TRequest> InnerHandler { get; set; } = null!;
-    #endregion
+   #region Properties
+   /// <inheritdoc/>
+   public IRequestHandler<TOutput, TRequest> InnerHandler { get; set; } = null!;
+   #endregion
 
-    #region Methods
-    /// <inheritdoc/>
-    public abstract ValueTask<IDispatchResult<TOutput>> HandleAsync(TRequest request, CancellationToken cancellationToken = default);
+   #region Methods
+   /// <inheritdoc/>
+   public abstract ValueTask<DispatchResult<TOutput>> HandleAsync(TRequest request, CancellationToken cancellationToken = default);
 
-    /// <summary>Asynchronously handles the given <paramref name="request"/>, using the <see cref="InnerHandler"/>.</summary>
-    /// <inheritdoc cref="HandleAsync(TRequest, CancellationToken)"/>
-    protected ValueTask<IDispatchResult<TOutput>> HandleInnerAsync(TRequest request, CancellationToken cancellationToken = default)
-    {
-        Debug.Assert(InnerHandler is not null);
-        cancellationToken.ThrowIfCancellationRequested();
+   /// <summary>Asynchronously handles the given <paramref name="request"/>, using the <see cref="InnerHandler"/>.</summary>
+   /// <inheritdoc cref="HandleAsync(TRequest, CancellationToken)"/>
+   protected ValueTask<DispatchResult<TOutput>> HandleInnerAsync(TRequest request, CancellationToken cancellationToken = default)
+   {
+      Debug.Assert(InnerHandler is not null);
+      cancellationToken.ThrowIfCancellationRequested();
 
-        return InnerHandler.HandleAsync(request, cancellationToken);
-    }
-    #endregion
+      return InnerHandler.HandleAsync(request, cancellationToken);
+   }
+   #endregion
 }

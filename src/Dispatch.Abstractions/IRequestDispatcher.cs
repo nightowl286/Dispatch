@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using TNO.Dispatch.Abstractions.Results;
+using TNO.Dispatch.Results;
 
 namespace TNO.Dispatch.Abstractions;
 
@@ -39,7 +39,7 @@ public interface IRequestDispatcher<in TRequestConstraint>
    /// A <see cref="CancellationToken"/> that can be used to cancel this operation.
    /// </param>
    /// <returns>The dispatch result returned by the handler.</returns>
-   ValueTask<IDispatchResult<TOutput>> DispatchAsync<TOutput, TRequest>(TRequest request, CancellationToken cancellationToken = default)
+   ValueTask<DispatchResult<TOutput>> DispatchAsync<TOutput, TRequest>(TRequest request, CancellationToken cancellationToken = default)
       where TOutput : notnull
       where TRequest : TRequestConstraint;
    #endregion
