@@ -103,6 +103,16 @@ where TRequestConstraint : notnull, IDispatchRequest
    }
 
    /// <inheritdoc/>
+   public IRequestRegistrar<TCollection> Register(Type outputType, Type requestType, object handler)
+   {
+      Type handlerInterfaceType = CreateHandlerInterfaceType(outputType, requestType);
+
+      _serviceFacade.Instance(handlerInterfaceType, handler);
+
+      return this;
+   }
+
+   /// <inheritdoc/>
    public IRequestRegistrar<TCollection> Register(Type handlerType)
    {
       foreach (Type interfaceType in FindHandlerInterfaceImplementations(handlerType))
@@ -113,6 +123,23 @@ where TRequestConstraint : notnull, IDispatchRequest
          Type outputType = genericArguments[0];
          Type requestType = genericArguments[1];
          Register(outputType, requestType, handlerType);
+      }
+
+      return this;
+   }
+
+   /// <inheritdoc/>
+   public IRequestRegistrar<TCollection> Register(object handler)
+   {
+      Type handlerType = handler.GetType();
+      foreach (Type interfaceType in FindHandlerInterfaceImplementations(handlerType))
+      {
+         Type[] genericArguments = interfaceType.GetGenericArguments();
+         Debug.Assert(genericArguments.Length == 2);
+
+         Type outputType = genericArguments[0];
+         Type requestType = genericArguments[1];
+         Register(outputType, requestType, handler);
       }
 
       return this;
@@ -152,6 +179,7 @@ where TRequestConstraint : notnull, IDispatchRequest
 
    /// <inheritdoc/>
    public abstract TCollection CreateScope();
+
    #endregion
 
    #region Methods
@@ -173,6 +201,9 @@ where TRequestConstraint : notnull, IDispatchRequest
    {
       foreach (Type interfaceType in handlerType.GetInterfaces())
       {
+         if (interfaceType.IsGenericType == false)
+            continue;
+
          Type genericDefinition = interfaceType.GetGenericTypeDefinition();
          if (genericDefinition == OpenHandlerInterfaceType)
             yield return interfaceType;
