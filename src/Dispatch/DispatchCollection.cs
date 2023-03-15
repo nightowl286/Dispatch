@@ -18,8 +18,8 @@ public abstract class DispatchCollection<TRequestConstraint, TCollection> : IReq
 where TRequestConstraint : notnull, IDispatchRequest
 {
    #region Fields
-   /// <summary>The service facade scope that will contain the registered handlers.</summary>
-   protected readonly IServiceFacade _serviceFacade;
+   /// <summary>The service scope that will contain the registered handlers.</summary>
+   protected readonly IServiceScope _serviceScope;
 
    /// <summary>The outer collection scope that can be used as a fall back.</summary>
    protected readonly DispatchCollection<TRequestConstraint, TCollection>? _outerScope;
@@ -33,7 +33,7 @@ where TRequestConstraint : notnull, IDispatchRequest
    /// <param name="outerScope">The service scope that will be used to create the main scope for this collection.</param>
    public DispatchCollection(IServiceScope outerScope)
    {
-      _serviceFacade = outerScope.CreateScope(AppendValueMode.ReplaceAll);
+      _serviceScope = outerScope.CreateScope(AppendValueMode.ReplaceAll);
    }
 
    /// <summary>Creates a new dispatch collection with the given <paramref name="scope"/> and <paramref name="outerScope"/>.</summary>
@@ -44,11 +44,12 @@ where TRequestConstraint : notnull, IDispatchRequest
    /// a <see cref="IServiceRegistrar.DefaultRegistrationMode"/>
    /// of <see cref="AppendValueMode.ReplaceAll"/>.
    /// </exception>
-   protected DispatchCollection(IServiceFacade scope, DispatchCollection<TRequestConstraint, TCollection> outerScope)
+   protected DispatchCollection(IServiceScope scope, DispatchCollection<TRequestConstraint, TCollection> outerScope)
    {
-      if (scope.DefaultRegistrationMode != AppendValueMode.ReplaceAll)
-         throw new ArgumentException($"The given scope must have the {nameof(scope.DefaultRegistrationMode)} as {AppendValueMode.ReplaceAll}.", nameof(scope));
-      _serviceFacade = scope;
+      if (scope.Registrar.DefaultRegistrationMode != AppendValueMode.ReplaceAll)
+         throw new ArgumentException($"The given scope must have the {nameof(scope.Registrar.DefaultRegistrationMode)} as {AppendValueMode.ReplaceAll}.", nameof(scope));
+
+      _serviceScope = scope;
       _outerScope = outerScope;
    }
    #endregion
@@ -64,7 +65,7 @@ where TRequestConstraint : notnull, IDispatchRequest
 
       Type handlerInterfaceType = CreateHandlerInterfaceType(outputType, requestType);
 
-      if (_serviceFacade.IsRegistered(handlerInterfaceType))
+      if (_serviceScope.IsRegistered(handlerInterfaceType))
          return true;
 
       return _outerScope?.CanDispatch<TOutput, TRequest>() == true;
@@ -79,7 +80,7 @@ where TRequestConstraint : notnull, IDispatchRequest
       Type requestType = typeof(TRequest);
 
       Type handlerInterfaceType = CreateHandlerInterfaceType(outputType, requestType);
-      object? handler = _serviceFacade.GetOptional(handlerInterfaceType);
+      object? handler = _serviceScope.Requester.GetOptional(handlerInterfaceType);
 
       if (handler is IRequestHandler<TOutput, TRequest> typedHandler)
          return await typedHandler.HandleAsync(request, cancellationToken);
@@ -97,7 +98,7 @@ where TRequestConstraint : notnull, IDispatchRequest
    {
       Type handlerInterfaceType = CreateHandlerInterfaceType(outputType, requestType);
 
-      _serviceFacade.Singleton(handlerInterfaceType, handlerType);
+      _serviceScope.Registrar.Singleton(handlerInterfaceType, handlerType);
 
       return this;
    }
@@ -107,7 +108,7 @@ where TRequestConstraint : notnull, IDispatchRequest
    {
       Type handlerInterfaceType = CreateHandlerInterfaceType(outputType, requestType);
 
-      _serviceFacade.Instance(handlerInterfaceType, handler);
+      _serviceScope.Registrar.Instance(handlerInterfaceType, handler);
 
       return this;
    }
@@ -151,12 +152,12 @@ where TRequestConstraint : notnull, IDispatchRequest
       // Todo(Nightowl): This might need a different approach? This works but doesn't seem that neat;
       Type lazyType = typeof(LazyDecorator<,>).MakeGenericType(outputType, requestType);
       object lazyDecorator =
-         Activator.CreateInstance(lazyType, _serviceFacade, workflow, handlerType)
+         Activator.CreateInstance(lazyType, _serviceScope, workflow, handlerType)
          ?? throw new NullReferenceException($"Failed to create a lazy decorator in the {nameof(DispatchCollection<TRequestConstraint, TCollection>)}.");
 
       Type handlerInterfaceType = CreateHandlerInterfaceType(outputType, requestType);
 
-      _serviceFacade.Instance(handlerInterfaceType, lazyDecorator);
+      _serviceScope.Registrar.Instance(handlerInterfaceType, lazyDecorator);
 
       return this;
    }
@@ -184,7 +185,7 @@ where TRequestConstraint : notnull, IDispatchRequest
 
    #region Methods
    /// <inheritdoc/>
-   public IWorkflowBuilder NewWorkflow() => new WorkflowBuilder(_serviceFacade);
+   public IWorkflowBuilder NewWorkflow() => new WorkflowBuilder(_serviceScope.Builder);
    #endregion
 
    #region Helpers
